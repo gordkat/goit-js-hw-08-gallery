@@ -1,27 +1,10 @@
-{
-  /* <li class="gallery__item">
-    <a
-        class="gallery__link"
-        href="https://cdn.pixabay.com/photo/2010/12/13/10/13/tulips-2546_1280.jpg"
-    >
-        <img
-            class="gallery__image"
-            src="https://cdn.pixabay.com/photo/2010/12/13/10/13/tulips-2546__340.jpg"
-            data-source="https://cdn.pixabay.com/photo/2010/12/13/10/13/tulips-2546_1280.jpg"
-            alt="Tulips"
-        />
-    </a>
-</li> */
-}
-
 import gallery__items from './gallery-items.js';
 
 const galleryRef = document.querySelector('.js-gallery');
 const modalRef = document.querySelector('.js-lightbox');
 const bigImgRef = document.querySelector('.lightbox__image');
-const btnCloseRef = document.querySelector('[data-action="close-lightbox"]');
 
-const markupItem = (item, index) => {
+const createMarkupItem = (item, index) => {
   const itemRef = document.createElement('li');
   itemRef.classList.add('gallery__item');
   const linkRef = document.createElement('a');
@@ -38,7 +21,10 @@ const markupItem = (item, index) => {
   return itemRef;
 };
 
-const markupItemsArr = gallery__items.map((item, idx) => markupItem(item, idx));
+const markupItemsArr = gallery__items.map((item, idx) =>
+  createMarkupItem(item, idx),
+);
+
 galleryRef.append(...markupItemsArr);
 
 const updateBigImg = smallImg => {
@@ -46,15 +32,11 @@ const updateBigImg = smallImg => {
   bigImgRef.alt = smallImg.alt;
   bigImgRef.setAttribute('data-index', smallImg.dataset.index);
 };
-const handelMarkupItem = event => {
-  event.preventDefault();
-  if (event.target.nodeName !== 'IMG') return;
-  modalRef.classList.add('is-open');
-  updateBigImg(event.target);
-};
+
 const closeModal = () => {
   modalRef.classList.remove('is-open');
   bigImgRef.src = '';
+  window.removeEventListener('keydown', handelByKeydown);
 };
 
 const handelCloseModal = event => {
@@ -64,21 +46,34 @@ const handelCloseModal = event => {
 
 const moveRight = () => {
   const nextIndex = Number(bigImgRef.dataset.index) + 1;
+  if (nextIndex >= gallery__items.length) return;
   const stringDataIndex = `[data-index='${nextIndex}']`;
   const nextImg = document.querySelector(stringDataIndex);
-  console.log(nextImg);
-  //   updateBigImg();
+  updateBigImg(nextImg);
 };
-const handelCloseModalByEsc = event => {
-  console.log(event.code);
 
+const moveLeft = () => {
+  const prevIndex = Number(bigImgRef.dataset.index) - 1;
+  if (prevIndex < 0) return;
+  const stringDataIndex = `[data-index='${prevIndex}']`;
+  const prevImg = document.querySelector(stringDataIndex);
+  updateBigImg(prevImg);
+};
+
+const handelByKeydown = event => {
+  console.log(event.code);
   if (event.code === 'Escape') closeModal();
   if (event.code === 'ArrowRight') moveRight();
   if (event.code === 'ArrowLeft') moveLeft();
-
-  console.log(event.code);
 };
 
-galleryRef.addEventListener('click', handelMarkupItem);
+const handelOpenModal = event => {
+  event.preventDefault();
+  if (event.target.nodeName !== 'IMG') return;
+  modalRef.classList.add('is-open');
+  updateBigImg(event.target);
+  window.addEventListener('keydown', handelByKeydown);
+};
+
+galleryRef.addEventListener('click', handelOpenModal);
 modalRef.addEventListener('click', handelCloseModal);
-window.addEventListener('keydown', handelCloseModalByEsc);
