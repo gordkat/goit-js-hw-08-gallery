@@ -61,7 +61,6 @@ const moveLeft = () => {
 };
 
 const handelByKeydown = event => {
-  console.log(event.code);
   if (event.code === 'Escape') closeModal();
   if (event.code === 'ArrowRight') moveRight();
   if (event.code === 'ArrowLeft') moveLeft();
