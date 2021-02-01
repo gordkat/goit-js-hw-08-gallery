@@ -37,6 +37,7 @@ const closeModal = () => {
   modalRef.classList.remove('is-open');
   bigImgRef.src = '';
   window.removeEventListener('keydown', handelByKeydown);
+  modalRef.removeEventListener('click', handelCloseModal);
 };
 
 const handelCloseModal = event => {
@@ -72,7 +73,7 @@ const handelOpenModal = event => {
   modalRef.classList.add('is-open');
   updateBigImg(event.target);
   window.addEventListener('keydown', handelByKeydown);
+  modalRef.addEventListener('click', handelCloseModal);
 };
 
 galleryRef.addEventListener('click', handelOpenModal);
-modalRef.addEventListener('click', handelCloseModal);
